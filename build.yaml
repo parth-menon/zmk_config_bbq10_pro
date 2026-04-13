@@ -1,0 +1,5 @@
+include:
+  - board: zitaotech_q10
+
+  - board: zitaotech_q10
+    shield: settings_reset
