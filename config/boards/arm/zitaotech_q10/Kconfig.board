@@ -39,4 +39,8 @@ config A320_TRACKPAD_SPEEDMULTIPLIER_HORIZONTAL
     help
       from 1 to 100
 
+config INPUT_A320_INIT_PRIORITY
+  int "A320 Initialization Priority"
+  default 90
+
 endmenu
