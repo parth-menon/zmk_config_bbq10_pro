@@ -5,7 +5,7 @@ This page contains zmk firmware config for bbq10 keyboard pro
 <img width="800" alt="image" src="https://github.com/user-attachments/assets/e1e959c9-8ee6-4ef4-9ea9-cb80f5779503" />
 </p>
 
-### Use this repo to generate your own ZMK keymap for the 9981 Pro keyboard.  
+### Use this repo to generate your own ZMK keymap for the bbq10 Pro keyboard.  
 ## Get started  
 ```Option1```   
 **0. Register a github account if you don't have one.**  
