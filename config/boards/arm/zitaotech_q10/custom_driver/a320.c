@@ -235,10 +235,10 @@ static void a320_poll_work_handler(struct k_work *work) {
             }
 
             if (capslock) {
-                input_report_rel(data->dev, INPUT_REL_WHEEL, -dy / 16, true, K_FOREVER);
+                input_report_rel(data->dev, INPUT_REL_WHEEL, dy / 16, true, K_FOREVER);
             } else {
                 input_report_rel(data->dev, INPUT_REL_X, dx, false, K_FOREVER);
-                input_report_rel(data->dev, INPUT_REL_Y, -dy, true, K_FOREVER);
+                input_report_rel(data->dev, INPUT_REL_Y, dy, true, K_FOREVER);
                 touched = true;
             }
         }
