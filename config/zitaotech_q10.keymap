@@ -96,6 +96,13 @@
             tapping-term-ms = <500>;
             bindings = <&out &kp>;
         };
+
+        td_f_upper: tap_dance_f_upper {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <200>;
+            bindings = <&none>, <&tog 3>;
+        };
     };
 
     keymap {
@@ -128,7 +135,7 @@
 &none         &none
 &bt BT_SEL 0  &bt BT_SEL 1  &td0            &bt BT_SEL 2     &bt BT_SEL 3
 &kp C_VOL_UP  &kp UP        &kp C_VOL_DN    &sys_reset       &ext_power EP_TOG  &none              &kp LT      &kp GT           &kp PIPE      &kp KP_EQUAL
-&kp LEFT      &kp DOWN      &kp RIGHT       &none            &kp BSLH           &kp AMPS           &kp LBRC    &kp RBRC         &kp CARET     &kp DEL
+&kp LEFT      &kp DOWN      &kp RIGHT       &td_f_upper      &kp BSLH           &kp AMPS           &kp LBRC    &kp RBRC         &kp CARET     &kp DEL
 &kp LSHFT     &msc SCRL_UP  &msc SCRL_DOWN  &rgb_ug RGB_BRD  &bl BL_DEC         &rgb_ug RGB_TOG    &bl BL_INC  &rgb_ug RGB_BRI  &td_boot_out  &kp ENTER
                             &kp LCTRL                        &kp LALT           &kp SPACE          &to SYM     &to DEFAULT
             >;
@@ -143,6 +150,53 @@
 &none  &none  &none  &none  &none  &none    &none        &none        &to DEFAULT  &none
               &none         &none  &none    &to DEFAULT  &to DEFAULT
             >;
+        };
+
+        extra_base {
+            bindings = <
+&mkp LCLK  &mkp RCLK
+&trans     &trans     &trans  &trans  &trans
+&trans     &trans     &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans
+&trans     &trans     &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans
+&trans     &trans     &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans
+                      &trans          &trans  &trans    &trans  &trans
+            >;
+        };
+
+        extra_sym {
+            bindings = <
+&msc SCRL_UP  &msc SCRL_DOWN
+&trans        &trans          &trans  &trans  &trans
+&trans        &trans          &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans
+&trans        &trans          &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans
+&trans        &trans          &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans
+                              &trans          &trans  &trans    &trans  &trans
+            >;
+        };
+
+        extra_upper {
+            bindings = <
+&kp C_VOL_UP  &kp C_VOL_DN
+&trans        &trans        &trans  &trans  &trans
+&trans        &trans        &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans
+&trans        &trans        &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans
+&trans        &trans        &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans
+                            &trans          &trans  &trans    &trans  &trans
+            >;
+        };
+    };
+
+    conditional_layers {
+        compatible = "zmk,conditional-layers";
+
+        extra_sym_layer {
+            if-layers = <1 4>;
+            then-layer = <5>;
+        };
+
+        extra_upper_layer {
+            if-layers = <2 4>;
+            then-layer = <6>;
         };
     };
 };
