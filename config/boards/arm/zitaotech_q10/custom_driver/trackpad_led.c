@@ -14,6 +14,7 @@
 #include <zmk/hid_indicators.h>
 #include <zmk/backlight.h>
 #include <zmk/activity.h>
+#include <zmk/keymap.h>
 #include "trackpad_led.h"
 #include "a320.h"
 
@@ -34,6 +35,7 @@ static const struct device *const led_dev = DEVICE_DT_GET(DT_CHOSEN(zmk_trackpad
 #define BRT_MAX 100
 #define BRT_LOW 20
 #define BRT_STEP 5
+#define BRT_GLOW 5
 
 #define ANIMATION_INTERVAL_MS 20
 #define POLLING_INTERVAL_MS 5
@@ -59,6 +61,15 @@ static bool keyboard_active = false;
 
 static bool usb_flash_state = false; /* true=亮灯，false=灭灯 */
 static bool usb_mode = false;        /* 当前是否处于 USB 传输模式 */
+static int prev_layer = -1;
+
+static uint8_t get_base_brightness(void) {
+    int layer = zmk_keymap_highest_layer_active();
+    if (layer >= 4 && layer <= 7) {
+        return BRT_GLOW; // Faint glow on layers 4, 5, 6, 7
+    }
+    return 0;            // Off on all other layers
+}
 
 static void set_led_brightness(uint8_t level) {
     if (!device_is_ready(led_dev)) {
@@ -92,7 +103,7 @@ static void usb_flash_work_handler(struct k_work *work) {
 static void auto_off_work_handler(struct k_work *work) {
     if (!capslock_on && !touch_active) {
         manual_override = false;
-        set_led_brightness(0);
+        set_led_brightness(get_base_brightness()); // Falls back to layer glow or off
         LOG_DBG("Auto-off triggered after inactivity");
     }
 }
@@ -125,6 +136,7 @@ static void polling_work_handler(struct k_work *work) {
     bool current_touch = tp_is_touched();
     bool current_active = (zmk_activity_get_state() == ZMK_ACTIVITY_ACTIVE);
     uint8_t current_brt = zmk_backlight_get_brt();
+    int current_layer = zmk_keymap_highest_layer_active();
 
     /* ---------------- USB 模式 ---------------- */
     if (transport == ZMK_TRANSPORT_USB) {
@@ -145,7 +157,7 @@ static void polling_work_handler(struct k_work *work) {
         /* 从 USB 切回 BLE，需要停止闪烁并熄灯 */
         usb_mode = false;
         k_work_cancel_delayable(&usb_flash_work);
-        set_led_brightness(0);
+        set_led_brightness(get_base_brightness());
         LOG_INF("Exited USB flash mode");
     }
 
@@ -176,7 +188,7 @@ static void polling_work_handler(struct k_work *work) {
                 set_led_brightness(last_valid_brt);
                 k_work_cancel_delayable(&auto_off_work);
             } else {
-                set_led_brightness(0);
+                set_led_brightness(get_base_brightness());
             }
         }
     }
@@ -207,6 +219,15 @@ static void polling_work_handler(struct k_work *work) {
         }
     }
 
+    /* Layer changes tracking */
+    if (current_layer != prev_layer) {
+        prev_layer = current_layer;
+        // Only update idle glow if the trackpad isn't currently active/touched/breathing
+        if (!usb_mode && !capslock_on && !touch_active && k_work_delayable_remaining_get(&auto_off_work) == 0) {
+            set_led_brightness(get_base_brightness());
+        }
+    }
+
     k_work_reschedule(&polling_work, K_MSEC(POLLING_INTERVAL_MS));
 }
 
@@ -218,11 +239,12 @@ static int indicator_tp_init(void) {
         return -ENODEV;
     }
 
-    set_led_brightness(0);
     usb_mode = false;
     usb_flash_state = false;
     last_backlight_brt = zmk_backlight_get_brt();
     capslock_on = touch_active = manual_override = keyboard_active = false;
+
+    set_led_brightness(get_base_brightness());
 
     k_work_init_delayable(&polling_work, polling_work_handler);
     k_work_init_delayable(&animation_work, animation_work_handler);
