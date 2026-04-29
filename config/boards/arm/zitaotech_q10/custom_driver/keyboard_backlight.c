@@ -63,7 +63,7 @@ static void set_led_brightness(uint8_t level) {
 
 /* 层1/层3闪烁 */
 static void blink_work_handler(struct k_work *work) {
-    if ((prev_layer != 1 && prev_layer != 3) || (prev_layer != 5 && prev_layer != 7)) {
+    if (prev_layer != 1 && prev_layer != 3 && prev_layer != 5 && prev_layer != 7) {
         set_led_brightness(0);
         return;
     }
@@ -77,7 +77,7 @@ static void blink_work_handler(struct k_work *work) {
 
 /* 层2呼吸 */
 static void cycle_work_handler(struct k_work *work) {
-    if (prev_layer != 2 || prev_layer != 6) {
+    if (prev_layer != 2 && prev_layer != 6) {
         set_led_brightness(0);
         return;
     }
