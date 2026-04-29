@@ -125,12 +125,14 @@ static void polling_work_handler(struct k_work *work) {
 
         switch (current_layer) {
         case 0:
+        case 4:
             /* 层0：跟随 RGB 和活动状态 */
             uint8_t brt = (rgb_on && active) ? ug_brt : 0;
             set_led_brightness(brt);
             break;
 
         case 1:
+        case 5:
             /*
              * 层1：闪烁
              * RGB 关闭 → 先高亮再低亮
@@ -144,11 +146,13 @@ static void polling_work_handler(struct k_work *work) {
             break;
 
         case 2:
+        case 6:
             /* 层2：始终呼吸 */
             k_work_reschedule(&cycle_work, K_MSEC(100));
             break;
 
         case 3:
+        case 7:
             /* 层3：更快的闪烁 */
             blink_on = false;
             set_led_brightness(BRT_BLINK_LOW);
