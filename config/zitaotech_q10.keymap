@@ -113,7 +113,7 @@
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
             tapping-term-ms = <400>;
-            bindings = <&sl 1>, <&to 5>;
+            bindings = <&sl 5>, <&to 5>;
 
             label = "TD5";
         };
@@ -122,7 +122,7 @@
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
             tapping-term-ms = <400>;
-            bindings = <&sl 2>, <&to 6>;
+            bindings = <&sl 6>, <&to 6>;
 
             label = "TD6";
         };
