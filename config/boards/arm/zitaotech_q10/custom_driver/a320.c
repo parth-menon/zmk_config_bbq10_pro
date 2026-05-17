@@ -6,6 +6,7 @@
 
 #define DT_DRV_COMPAT avago_a320
 
+#include <stdlib.h>
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
@@ -20,6 +21,7 @@
 #include <zmk/event_manager.h>
 #include <zmk/events/position_state_changed.h>
 #include <zmk/events/hid_indicators_changed.h>
+#include <zmk/keymap.h>
 
 #include "trackpad_led.h"
 
@@ -235,7 +237,17 @@ static void a320_poll_work_handler(struct k_work *work) {
             }
 
             if (capslock) {
-                input_report_rel(data->dev, INPUT_REL_WHEEL, dy / 16, true, K_FOREVER);
+                // Compare the absolute values to find the dominant direction
+                if (abs(dx) > abs(dy)) {
+                    // Movement is mostly horizontal. 
+                    // Send ONLY left/right scroll, ignore Y axis.
+                    input_report_rel(data->dev, INPUT_REL_HWHEEL, dx / 16, true, K_FOREVER);        
+                } else if (abs(dy) > 0) {
+                    // Movement is mostly vertical (or perfectly diagonal).
+                    // Send ONLY up/down scroll, ignore X axis.
+                    // (We check > 0 to ensure it doesn't fire if both dx and dy are 0)
+                    input_report_rel(data->dev, INPUT_REL_WHEEL, dy / 16, true, K_FOREVER);
+                }
             } else {
                 input_report_rel(data->dev, INPUT_REL_X, dx, false, K_FOREVER);
                 input_report_rel(data->dev, INPUT_REL_Y, dy, true, K_FOREVER);
