@@ -13,7 +13,8 @@ In Mobile Mode, TrackPad works as cursors(up/down/left/right), Shoulder buttons 
 In Normal Mode, current ZiaoTech keymaop behaviours.
 
 Notes:
-- To SWITCH between these two modes, double tap F in Upper Layer.
+- To SWITCH between these two modes, double tap F in Upper Layer. </br>
+  How to idenfity? No Trackpad light in Mobile Mode, faint glow in Normal mode.
 - 3 and 7 are media layers to play pause music(space bar), N next song, P previous song, etc. Slightly updated version of ZiaoTech mapping
 - Alt is also sticky
 - Normal/Detached Mode, the shoulder buttons always act as Scroll keys(Scroll Down and Scroll Up). In UPPER layer of Normal/Detached Mode, shoulder buttons scroll horizontally. To scroll Down and Up, use Z and X
