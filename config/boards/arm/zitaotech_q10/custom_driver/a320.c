@@ -266,6 +266,7 @@ static void a320_poll_work_handler(struct k_work *work)
                             .implicit_modifiers = 0,
                             .explicit_modifiers = 0});
                     }
+                    touched = true;
                 }
                 else
                 {
