@@ -22,7 +22,6 @@
 #include <zmk/events/position_state_changed.h>
 #include <zmk/events/hid_indicators_changed.h>
 #include <zmk/keymap.h>
-#include <zmk/events/keycode_state_changed.h>
 
 #include "trackpad_led.h"
 
@@ -32,8 +31,8 @@ LOG_MODULE_REGISTER(a320, CONFIG_A320_LOG_LEVEL);
  * Configurable parameters
  * ========================= */
 
-#define SHIFT_ARROW_DEBOUNCE_MS 50 //
-#define SHIFT_ARROW_RELEASE_MS 20  //
+#define SHIFT_ARROW_DEBOUNCE_MS 50 // 
+#define SHIFT_ARROW_RELEASE_MS 20  // 
 
 #ifndef CONFIG_A320_POLL_INTERVAL_MS
 #define CONFIG_A320_POLL_INTERVAL_MS 2
@@ -72,15 +71,13 @@ static struct k_work_delayable arrow_release_work;
  * Data & Config structs
  * ========================= */
 
-struct a320_dev_config
-{
+struct a320_dev_config {
     struct i2c_dt_spec i2c;
 };
 
 typedef int (*a320_read_fn_t)(const struct device *dev, int16_t *dx, int16_t *dy);
 
-struct a320_data
-{
+struct a320_data {
     const struct device *dev;
     struct k_work_delayable poll_work;
     a320_read_fn_t read_motion;
@@ -106,16 +103,14 @@ struct a320_data
  * Key listener (Ctrl + Shift)
  * ========================= */
 
-static int key_listener_cb(const zmk_event_t *eh)
-{
+static int key_listener_cb(const zmk_event_t *eh) {
 
     const struct zmk_position_state_changed *ev = as_zmk_position_state_changed(eh);
 
     if (!ev)
         return 0;
 
-    if (ev->position == 37)
-    {
+    if (ev->position == 37) {
         ctrl_pressed = ev->state;
     }
 
@@ -133,8 +128,7 @@ ZMK_SUBSCRIPTION(a320_key_listener, zmk_position_state_changed);
  * HID indicator listener
  * ========================= */
 
-static int hid_indicators_listener(const zmk_event_t *eh)
-{
+static int hid_indicators_listener(const zmk_event_t *eh) {
     const struct zmk_hid_indicators_changed *ev = as_zmk_hid_indicators_changed(eh);
 
     if (ev)
@@ -147,8 +141,7 @@ static int hid_indicators_listener(const zmk_event_t *eh)
  * I2C read variants
  * ========================= */
 
-static int a320_read_motion_3b(const struct device *dev, int16_t *dx, int16_t *dy)
-{
+static int a320_read_motion_3b(const struct device *dev, int16_t *dx, int16_t *dy) {
     const struct a320_dev_config *cfg = dev->config;
     uint8_t buf[3];
     uint8_t reg = 0x82;
@@ -165,8 +158,7 @@ static int a320_read_motion_3b(const struct device *dev, int16_t *dx, int16_t *d
     return 0;
 }
 
-static int a320_read_motion_37(const struct device *dev, int16_t *dx, int16_t *dy)
-{
+static int a320_read_motion_37(const struct device *dev, int16_t *dx, int16_t *dy) {
     const struct a320_dev_config *cfg = dev->config;
     uint8_t buf[7];
     uint8_t reg = 0x0A;
@@ -187,33 +179,56 @@ static int a320_read_motion_37(const struct device *dev, int16_t *dx, int16_t *d
  * Poll work
  * ========================= */
 
-static void a320_poll_work_handler(struct k_work *work)
-{
+static void a320_poll_work_handler(struct k_work *work) {
     struct k_work_delayable *dwork = CONTAINER_OF(work, struct k_work_delayable, work);
     struct a320_data *data = CONTAINER_OF(dwork, struct a320_data, poll_work);
 
     int pin_state = gpio_pin_get(motion_gpio_dev, MOTION_GPIO_PIN);
 
-    if (pin_state == 0)
-    {
+    if (pin_state == 0) {
 
         int16_t dx = 0, dy = 0;
 
-        if (data->read_motion(data->dev, &dx, &dy) == 0 && (dx || dy))
-        {
+        if (data->read_motion(data->dev, &dx, &dy) == 0 && (dx || dy)) {
 
             bool capslock = current_indicators & HID_INDICATORS_CAPS_LOCK;
 
-            if (ctrl_pressed)
-            {
+            if (ctrl_pressed) {
                 dx /= 2;
                 dy /= 2;
             }
 
+            /* ===== SHIFT → ARROW MODE ===== */
+            /*
+            if (shift_pressed) {
+
+                int64_t now = k_uptime_get();
+
+                if (!arrow_pressed && (now - last_arrow_time >= SHIFT_ARROW_DEBOUNCE_MS)) {
+
+                    uint16_t keycode;
+
+                    if (abs(dx) > abs(dy)) {
+                        keycode = (dx > 0) ? INPUT_BTN_1 : INPUT_BTN_1;
+                    } else {
+                        keycode = (dy > 0) ? INPUT_BTN_1 : INPUT_BTN_1;
+                    }
+
+                    input_report_key(data->dev, keycode, 1, true, K_FOREVER);
+
+                    arrow_pressed = true;
+                    trackpoint_dev_ref = data->dev;
+                    last_arrow_time = now;
+
+                    k_work_schedule(&arrow_release_work, K_MSEC(SHIFT_ARROW_RELEASE_MS));
+                }
+
+                goto reschedule;
+            }
+*/
             /* ===== Normal mouse mode ===== */
 
-            if (!capslock)
-            {
+            if (!capslock) {
                 uint8_t brt = indicator_tp_get_last_valid_brightness();
                 float factor = 0.4f + 0.01f * brt;
 
@@ -221,64 +236,25 @@ static void a320_poll_work_handler(struct k_work *work)
                 dy = dy * 3 / 2 * factor;
             }
 
-            if (capslock)
-            {
+            if (capslock) {
                 // Compare the absolute values to find the dominant direction
-                if (abs(dx) > abs(dy))
-                {
-                    input_report_rel(data->dev, INPUT_REL_HWHEEL, dx / 16, true, K_FOREVER);
-                }
-                else if (abs(dy) > 0)
-                {
+                if (abs(dx) > abs(dy)) {
+                    // Movement is mostly horizontal. 
+                    // Send ONLY left/right scroll, ignore Y axis.
+                    input_report_rel(data->dev, INPUT_REL_HWHEEL, dx / 16, true, K_FOREVER);        
+                } else if (abs(dy) > 0) {
+                    // Movement is mostly vertical (or perfectly diagonal).
+                    // Send ONLY up/down scroll, ignore X axis.
+                    // (We check > 0 to ensure it doesn't fire if both dx and dy are 0)
                     input_report_rel(data->dev, INPUT_REL_WHEEL, dy / 16, true, K_FOREVER);
                 }
-            }
-            else
-            {
-                uint8_t layer = zmk_keymap_highest_layer_active();
-
-                if (layer == 0 || layer == 1 || layer == 2 || layer == 3)
-                {
-                    if (abs(dx) > 10 || abs(dy) > 10)
-                    {
-                        uint32_t keycode = 0;
-
-                        if (abs(dx) > abs(dy))
-                        {
-                            keycode = (dx > 0) ? 0x4F : 0x50;
-                        }
-                        else
-                        {
-                            keycode = (dy > 0) ? 0x51 : 0x52;
-                        }
-
-                        raise_zmk_keycode_state_changed((struct zmk_keycode_state_changed){
-                            .usage_page = 0x07,
-                            .keycode = keycode,
-                            .state = true,
-                            .implicit_modifiers = 0,
-                            .explicit_modifiers = 0});
-
-                        raise_zmk_keycode_state_changed((struct zmk_keycode_state_changed){
-                            .usage_page = 0x07,
-                            .keycode = keycode,
-                            .state = false,
-                            .implicit_modifiers = 0,
-                            .explicit_modifiers = 0});
-                    }
-                    touched = true;
-                }
-                else
-                {
-                    input_report_rel(data->dev, INPUT_REL_X, dx, false, K_FOREVER);
-                    input_report_rel(data->dev, INPUT_REL_Y, dy, true, K_FOREVER);
-                    touched = true;
-                }
+            } else {
+                input_report_rel(data->dev, INPUT_REL_X, dx, false, K_FOREVER);
+                input_report_rel(data->dev, INPUT_REL_Y, dy, true, K_FOREVER);
+                touched = true;
             }
         }
-    }
-    else
-    {
+    } else {
         touched = false;
     }
 
@@ -292,8 +268,7 @@ bool tp_is_touched(void) { return touched; }
  * Init
  * ========================= */
 
-static int a320_init(const struct device *dev)
-{
+static int a320_init(const struct device *dev) {
     const struct a320_dev_config *cfg = dev->config;
     struct a320_data *data = dev->data;
 
@@ -306,8 +281,7 @@ static int a320_init(const struct device *dev)
 
     gpio_pin_configure(motion_gpio_dev, MOTION_GPIO_PIN, GPIO_INPUT | GPIO_PULL_UP);
 
-    switch (cfg->i2c.addr)
-    {
+    switch (cfg->i2c.addr) {
     case 0x3B:
         data->read_motion = a320_read_motion_3b;
         break;
