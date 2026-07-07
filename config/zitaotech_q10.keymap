@@ -142,23 +142,23 @@
 
         default_layer {
             bindings = <
-&none      &none
-&kp CLCK   &kp LGUI  &mkp LCLK           &mt ESC K_BACK  &kp TAB
-&kp Q      &kp W     &kp E               &kp R           &kp T             &kp Y        &kp U  &kp I  &kp O          &kp P
-&kp A      &kp S     &kp D               &kp F           &kp G             &kp H        &kp J  &kp K  &kp L          &kp BSPC
-&sk LSHFT  &kp Z     &kp X               &kp C           &kp V             &kp B        &kp N  &kp M  &mt DLLR SEMI  &kp ENTER
-                     &sk_kp LCTRL LCTRL                  &sk_kp LALT LALT  &kp SPACE    &td1   &td2
+&none     &none
+&kp CLCK  &kp LGUI  &mkp LCLK                     &mt ESC K_BACK  &kp TAB
+&kp Q     &kp W     &kp E                         &kp R           &kp T                &kp Y        &kp U  &kp I               &kp O          &kp P
+&kp A     &kp S     &kp D                         &kp F           &kp G                &kp H        &kp J  &kp K               &kp L          &kp BSPC
+&td1      &kp Z     &kp X                         &kp C           &kp V                &kp B        &kp N  &kp M               &mt DLLR SEMI  &kp ENTER
+                    &sk_kp LEFT_SHIFT LEFT_SHIFT                  &kp C_VOICE_COMMAND  &kp SPACE    &td2   &sk_kp RCTRL RCTRL
             >;
         };
 
         sym_layer {
             bindings = <
 &none      &none
-&kp PSCRN  &kp C_AC_SEARCH  &mkp LCLK  &kp F5  &kp F12
-&kp HASH   &kp N1           &kp N2     &kp N3  &mt LBKT LPAR  &mt RBKT RPAR    &kp UNDER  &kp MINUS  &kp PLUS       &kp AT
-&kp STAR   &kp N4           &kp N5     &kp N6  &kp SLASH      &kp COLON        &kp SEMI   &kp APOS   &kp DQT        &kp BACKSPACE
-&kp LSHFT  &kp N7           &kp N8     &kp N9  &kp QMARK      &kp EXCL         &kp COMMA  &kp DOT    &tdc_to_MEDIA  &kp ENTER
-                            &kp LCTRL          &kp N0         &kp SPACE        &to 0      &to 2
+&kp PSCRN  &kp C_AC_SEARCH  &mkp LCLK                     &kp F5  &kp F12
+&kp HASH   &kp N1           &kp N2                        &kp N3  &mt LBKT LPAR  &mt RBKT RPAR    &kp UNDER  &kp MINUS                           &kp PLUS       &kp AT
+&kp STAR   &kp N4           &kp N5                        &kp N6  &kp SLASH      &kp COLON        &kp SEMI   &kp APOS                            &kp DQT        &kp BACKSPACE
+&to 0      &kp N7           &kp N8                        &kp N9  &kp QMARK      &kp EXCL         &kp COMMA  &kp DOT                             &tdc_to_MEDIA  &kp ENTER
+                            &sk_kp LEFT_SHIFT LEFT_SHIFT          &kp N0         &kp SPACE        &to 2      &sk_kp RIGHT_CONTROL RIGHT_CONTROL
             >;
         };
 
@@ -166,10 +166,10 @@
             bindings = <
 &none           &none
 &bt BT_SEL 0    &bt BT_SEL 1    &td0             &bt BT_SEL 2  &bt BT_SEL 3
-&msc SCRL_DOWN  &kp UP          &msc SCRL_UP     &sys_reset    &ext_power EP_TOG  &kp PERCENT        &kp LT           &kp GT           &kp PIPE      &kp KP_EQUAL
-&kp LEFT        &kp DOWN        &kp RIGHT        &td_f_upper   &kp BSLH           &kp AMPS           &kp LBRC         &kp RBRC         &kp CARET     &kp DEL
-&kp LSHFT       &msc SCRL_LEFT  &msc SCRL_RIGHT  &bl BL_CYCLE  &bl BL_TOG         &rgb_ug RGB_TOG    &rgb_ug RGB_BRD  &rgb_ug RGB_BRI  &td_boot_out  &kp ENTER
-                                &kp LCTRL                      &kp LALT           &kp SPACE          &to 1            &to 0
+&msc SCRL_DOWN  &kp UP          &msc SCRL_UP     &sys_reset    &ext_power EP_TOG  &kp PERCENT        &kp LT           &kp GT                              &kp PIPE      &kp KP_EQUAL
+&kp LEFT        &kp DOWN        &kp RIGHT        &td_f_upper   &kp BSLH           &kp AMPS           &kp LBRC         &kp RBRC                            &kp CARET     &kp DEL
+&to 1           &msc SCRL_LEFT  &msc SCRL_RIGHT  &bl BL_CYCLE  &bl BL_TOG         &rgb_ug RGB_TOG    &rgb_ug RGB_BRD  &rgb_ug RGB_BRI                     &td_boot_out  &kp ENTER
+                                &sk LEFT_SHIFT                 &mkp MCLK          &kp SPACE          &to 0            &sk_kp RIGHT_CONTROL RIGHT_CONTROL
             >;
         };
 
@@ -179,30 +179,30 @@
 &none         &none         &none  &none  &none
 &none         &none         &none  &none  &none  &none               &none       &none  &none  &kp C_PREV
 &none         &none         &none  &none  &none  &none               &none       &none  &none  &none
-&none         &none         &none  &none  &none  &none               &kp C_NEXT  &none  &to 0  &none
-                            &none         &none  &kp C_PLAY_PAUSE    &to 0       &to 0
+&to 0         &none         &none  &none  &none  &none               &kp C_NEXT  &none  &to 0  &none
+                            &none         &none  &kp C_PLAY_PAUSE    &to 0       &none
             >;
         };
 
         extra_base {
             bindings = <
 &mkp LCLK  &mkp RCLK
-&kp CLCK   &kp LGUI   &mkp LCLK           &mt ESC K_BACK  &kp TAB
-&kp Q      &kp W      &kp E               &kp R           &kp T             &kp Y        &kp U  &kp I  &kp O          &kp P
-&kp A      &kp S      &kp D               &kp F           &kp G             &kp H        &kp J  &kp K  &kp L          &kp BSPC
-&sk LSHFT  &kp Z      &kp X               &kp C           &kp V             &kp B        &kp N  &kp M  &mt DLLR SEMI  &kp ENTER
-                      &sk_kp LCTRL LCTRL                  &sk_kp LALT LALT  &kp SPACE    &td5   &td6
+&kp CLCK   &kp LGUI   &mkp LCLK                     &mt ESC K_BACK  &kp TAB
+&kp Q      &kp W      &kp E                         &kp R           &kp T                &kp Y        &kp U  &kp I                               &kp O          &kp P
+&kp A      &kp S      &kp D                         &kp F           &kp G                &kp H        &kp J  &kp K                               &kp L          &kp BSPC
+&td5       &kp Z      &kp X                         &kp C           &kp V                &kp B        &kp N  &kp M                               &mt DLLR SEMI  &kp ENTER
+                      &sk_kp LEFT_SHIFT LEFT_SHIFT                  &kp C_VOICE_COMMAND  &kp SPACE    &td6   &sk_kp RIGHT_CONTROL RIGHT_CONTROL
             >;
         };
 
         extra_sym {
             bindings = <
 &mkp LCLK  &mkp RCLK
-&kp PSCRN  &kp C_AC_SEARCH  &mkp LCLK  &kp F5  &kp F12
-&kp HASH   &kp N1           &kp N2     &kp N3  &mt LBKT LPAR  &mt RBKT RPAR    &kp UNDER  &kp MINUS  &kp PLUS             &kp AT
-&kp STAR   &kp N4           &kp N5     &kp N6  &kp SLASH      &kp COLON        &kp SEMI   &kp APOS   &kp DQT              &kp BACKSPACE
-&kp LSHFT  &kp N7           &kp N8     &kp N9  &kp QMARK      &kp EXCL         &kp COMMA  &kp DOT    &tdc_to_EXTRA_MEDIA  &kp ENTER
-                            &kp LCTRL          &kp N0         &kp SPACE        &to 4      &to 6
+&kp PSCRN  &kp C_AC_SEARCH  &mkp LCLK       &kp F5  &kp F12
+&kp HASH   &kp N1           &kp N2          &kp N3  &mt LBKT LPAR  &mt RBKT RPAR    &kp UNDER  &kp MINUS                           &kp PLUS             &kp AT
+&kp STAR   &kp N4           &kp N5          &kp N6  &kp SLASH      &kp COLON        &kp SEMI   &kp APOS                            &kp DQT              &kp BACKSPACE
+&to 4      &kp N7           &kp N8          &kp N9  &kp QMARK      &kp EXCL         &kp COMMA  &kp DOT                             &tdc_to_EXTRA_MEDIA  &kp ENTER
+                            &sk LEFT_SHIFT          &kp N0         &kp SPACE        &to 6      &sk_kp RIGHT_CONTROL RIGHT_CONTROL
             >;
         };
 
@@ -210,10 +210,10 @@
             bindings = <
 &mkp LCLK       &mkp RCLK
 &bt BT_SEL 0    &bt BT_SEL 1    &td0             &bt BT_SEL 2  &bt BT_SEL 3
-&msc SCRL_DOWN  &kp UP          &msc SCRL_UP     &sys_reset    &ext_power EP_TOG  &kp PERCENT        &kp LT           &kp GT           &kp PIPE      &kp KP_EQUAL
-&kp LEFT        &kp DOWN        &kp RIGHT        &td_f_lower   &kp BSLH           &kp AMPS           &kp LBRC         &kp RBRC         &kp CARET     &kp DEL
-&kp LSHFT       &msc SCRL_LEFT  &msc SCRL_RIGHT  &bl BL_CYCLE  &bl BL_TOG         &rgb_ug RGB_TOG    &rgb_ug RGB_BRD  &rgb_ug RGB_BRI  &td_boot_out  &kp ENTER
-                                &kp LCTRL                      &kp LALT           &kp SPACE          &to 5            &to 4
+&msc SCRL_DOWN  &kp UP          &msc SCRL_UP     &sys_reset    &ext_power EP_TOG  &kp PERCENT        &kp LT           &kp GT                              &kp PIPE      &kp KP_EQUAL
+&kp LEFT        &kp DOWN        &kp RIGHT        &td_f_lower   &kp BSLH           &kp AMPS           &kp LBRC         &kp RBRC                            &kp CARET     &kp DEL
+&to 5           &msc SCRL_LEFT  &msc SCRL_RIGHT  &bl BL_CYCLE  &bl BL_TOG         &rgb_ug RGB_TOG    &rgb_ug RGB_BRD  &rgb_ug RGB_BRI                     &td_boot_out  &kp ENTER
+                                &sk LEFT_SHIFT                 &mkp MCLK          &kp SPACE          &to 4            &sk_kp RIGHT_CONTROL RIGHT_CONTROL
             >;
         };
 
@@ -223,8 +223,8 @@
 &none         &none         &none  &none  &none
 &none         &none         &none  &none  &none  &none               &none       &none  &none  &kp C_PREV
 &none         &none         &none  &none  &none  &none               &none       &none  &none  &none
-&none         &none         &none  &none  &none  &none               &kp C_NEXT  &none  &to 4  &none
-                            &none         &none  &kp C_PLAY_PAUSE    &to 4       &to 4
+&to 4         &none         &none  &none  &none  &none               &kp C_NEXT  &none  &to 4  &none
+                            &none         &none  &kp C_PLAY_PAUSE    &to 4       &none
             >;
         };
     };
